@@ -88,6 +88,13 @@ case $name in
 	aarch64-linux-android-ld|aarch64-linux-android-ld.gold)
     flags=${ANDROID_ARM64_LDFLAGS}
 		;;
+	# android (x86)
+	x86-linux-android-clang)
+    flags=${ANDROID_X86_CFLAGS}
+		;;
+	x86-linux-android-ld|x86-linux-android-ld.gold)
+    flags=${ANDROID_X86_LDFLAGS}
+    ;;
 	# android (x86_64)
 	x86_64-linux-android-clang)
     flags=${ANDROID_X86_64_CFLAGS}
@@ -130,6 +137,7 @@ case $target in
 	*-linux-gnueabihf)      exec env PATH="${RPI_PATH}:${PATH}" $cmd $flags "$@" ;;
 	armv7-linux-android*)   exec env PATH="${ANDROID_ARM_PATH}:${PATH}" $cmd $flags "$@" ;;
 	aarch64-linux-android*) exec env PATH="${ANDROID_ARM64_PATH}:${PATH}" $cmd $flags "$@" ;;
+	x86-linux-android*)     exec env PATH="${ANDROID_X86_PATH}:${PATH}" $cmd $flags "$@" ;;
 	x86_64-linux-android*)  exec env PATH="${ANDROID_X86_64_PATH}:${PATH}" $cmd $flags "$@" ;;
 	wasm32-*)               exec env PATH="${WASM_PATH}:${PATH}" $cmd $flags "$@" ;;
 	*) exec $cmd $flags "$@" ;;
