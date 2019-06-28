@@ -25,6 +25,16 @@ esac
 
 case $name in
   *-cabal)
+    fsysroot=${ANDROID_ARM64_SYSROOT}
+    case $target in
+      armv7-linux-androideabi)  fsysroot=${ANDROID_ARM_SYSROOT}
+      ;;
+      aarch64-linux-android)    fsysroot=${ANDROID_ARM64_SYSROOT}
+      ;;
+      x86_64-linux-android)     fsysroot=${ANDROID_X86_64_SYSROOT}
+      ;;
+    esac
+    
     fcommon="--builddir=dist/${target}"
     fcompile=" --with-ghc=${target}-ghc"
     fcompile+=" --with-ghc-pkg=${target}-ghc-pkg"
@@ -33,7 +43,8 @@ case $name in
     fcompile+=" --with-hsc2hs=${target}-hsc2hs"
     fcompile+=" --hsc2hs-options=--cross-compile"
     fcompile+=" --ghc-options=-fPIC"
-    fconfig="--enable-static --enable-shared --disable-executable-dynamic --configure-option=--host=${target}"
+    fconfig="--enable-static --disable-shared --disable-executable-dynamic --disable-executable-stripping --configure-option=--host=${target} --extra-include-dirs=${fsysroot}/usr/include --extra-lib-dirs=${fsysroot}/usr/lib"
+    
     case $1 in
       configure|install) flags="${fcommon} ${fcompile} ${fconfig}" ;;
       build)             flags="${fcommon} ${fcompile}" ;;
@@ -89,13 +100,6 @@ case $name in
   aarch64-linux-android-ld|aarch64-linux-android-ld.gold)
     flags=${ANDROID_ARM64_LDFLAGS}
     ;;
-  # android (x86)
-  x86-linux-android-clang)
-    flags=${ANDROID_X86_CFLAGS}
-    ;;
-  x86-linux-android-ld|x86-linux-android-ld.gold)
-    flags=${ANDROID_X86_LDFLAGS}
-    ;;
   # android (x86_64)
   x86_64-linux-android-clang)
     flags=${ANDROID_X86_64_CFLAGS}
@@ -138,7 +142,6 @@ case $target in
   *-linux-gnueabihf)      exec env PATH="${RPI_PATH}:${PATH}" $cmd $flags "$@" ;;
   armv7-linux-android*)   exec env PATH="${ANDROID_ARM_PATH}:${PATH}" $cmd $flags "$@" ;;
   aarch64-linux-android*) exec env PATH="${ANDROID_ARM64_PATH}:${PATH}" $cmd $flags "$@" ;;
-  x86-linux-android*)     exec env PATH="${ANDROID_X86_PATH}:${PATH}" $cmd $flags "$@" ;;
   x86_64-linux-android*)  exec env PATH="${ANDROID_X86_64_PATH}:${PATH}" $cmd $flags "$@" ;;
   wasm32-*)               exec env PATH="${WASM_PATH}:${PATH}" $cmd $flags "$@" ;;
   *) exec $cmd $flags "$@" ;;
